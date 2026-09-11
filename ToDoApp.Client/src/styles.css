@@ -1,0 +1,219 @@
+/*
+ * Global design tokens and the paper/sticky-note look.
+ *
+ * The palette is deliberately quiet: warm neutral paper, muted ink, hairline borders.
+ * The only saturated colour on screen belongs to the three columns, so the board reads
+ * as a desk with notes on it rather than a dashboard.
+ */
+
+:root {
+  --paper: #faf9f6;
+  --surface: #ffffff;
+  --surface-sunken: #f2f0ec;
+  --ink: #33322e;
+  --ink-muted: #6f6d67;
+  --ink-faint: #9a978f;
+  --hairline: #e3e0d9;
+  --hairline-strong: #d3cfc6;
+
+  /* One accent per column, plus the note tint that belongs with it. */
+  --todo-accent: #4a7fb5;
+  --todo-note: #e7f0f9;
+  --todo-note-edge: #cddff0;
+
+  --doing-accent: #c2932c;
+  --doing-note: #fdf4d8;
+  --doing-note-edge: #f0e2b4;
+
+  --done-accent: #4f8f5f;
+  --done-note: #e6f1e6;
+  --done-note-edge: #cfe3d0;
+
+  --danger: #b4453a;
+
+  --radius: 4px;
+  --shadow-note: 0 1px 1px rgba(60, 55, 45, 0.09), 0 6px 12px -6px rgba(60, 55, 45, 0.22);
+  --shadow-note-lifted: 0 6px 10px rgba(60, 55, 45, 0.14), 0 20px 34px -14px rgba(60, 55, 45, 0.34);
+  --shadow-panel: 0 1px 2px rgba(60, 55, 45, 0.05);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bootstrap's defaults are louder than this app wants. */
+.btn {
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: var(--radius);
+  font-weight: 500;
+}
+
+.btn-quiet {
+  --bs-btn-color: var(--ink-muted);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: var(--hairline-strong);
+  --bs-btn-hover-color: var(--ink);
+  --bs-btn-hover-bg: var(--surface-sunken);
+  --bs-btn-hover-border-color: var(--hairline-strong);
+  --bs-btn-active-color: var(--ink);
+  --bs-btn-active-bg: var(--surface-sunken);
+  --bs-btn-active-border-color: var(--hairline-strong);
+}
+
+.btn-ink {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #46443e;
+  --bs-btn-border-color: #46443e;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #34322d;
+  --bs-btn-hover-border-color: #34322d;
+  --bs-btn-active-bg: #2b2924;
+  --bs-btn-active-border-color: #2b2924;
+  --bs-btn-disabled-bg: #46443e;
+  --bs-btn-disabled-border-color: #46443e;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--hairline-strong);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--ink);
+  background-color: var(--surface);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ink-faint);
+  box-shadow: 0 0 0 3px rgba(120, 116, 106, 0.14);
+}
+
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.3rem;
+}
+
+/* --- sticky notes ---------------------------------------------------------
+ * The note itself is global rather than component-scoped because the CDK drag
+ * preview is rendered in an overlay outside the component tree, and has to keep
+ * looking like the card it was lifted from.
+ */
+
+.sticky-note {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0.75rem 0.85rem 0.65rem;
+  border: none;
+  border-radius: 2px;
+  background-color: var(--note-bg, var(--doing-note));
+  color: var(--ink);
+  text-align: left;
+  box-shadow: var(--shadow-note);
+  /* Slight, deterministic tilt; the per-card angle is set inline from its id. */
+  transform: rotate(var(--note-tilt, 0deg));
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+/* The turned-up bottom-right corner that makes it read as paper. */
+.sticky-note::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(
+    315deg,
+    var(--paper) 0%,
+    var(--paper) 46%,
+    var(--note-edge, var(--doing-note-edge)) 47%,
+    var(--note-bg, var(--doing-note)) 100%
+  );
+}
+
+.sticky-note:hover,
+.sticky-note:focus-visible {
+  /* Straightening on hover is the whole affordance: the note lifts off the desk. */
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: var(--shadow-note-lifted);
+}
+
+.sticky-note:focus-visible {
+  outline: 2px solid var(--ink-faint);
+  outline-offset: 3px;
+}
+
+.sticky-note--todo {
+  --note-bg: var(--todo-note);
+  --note-edge: var(--todo-note-edge);
+}
+
+.sticky-note--doing {
+  --note-bg: var(--doing-note);
+  --note-edge: var(--doing-note-edge);
+}
+
+.sticky-note--done {
+  --note-bg: var(--done-note);
+  --note-edge: var(--done-note-edge);
+}
+
+/* --- drag and drop -------------------------------------------------------- */
+
+/* The note travelling with the cursor. */
+.cdk-drag-preview .sticky-note,
+.sticky-note.cdk-drag-preview {
+  transform: rotate(-1.5deg) scale(1.02);
+  box-shadow: var(--shadow-note-lifted);
+}
+
+/* The gap left behind in the source column. */
+.cdk-drag-placeholder {
+  opacity: 1;
+}
+
+.cdk-drag-placeholder .sticky-note {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(120, 116, 106, 0.06),
+    rgba(120, 116, 106, 0.06) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  box-shadow: inset 0 0 0 1px var(--hairline-strong);
+  transform: rotate(0deg);
+}
+
+.cdk-drag-placeholder .sticky-note::after,
+.cdk-drag-placeholder .sticky-note * {
+  visibility: hidden;
+}
+
+/* Neighbours sliding out of the way. */
+.cdk-drag-animating,
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 190ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Tilt variants. A card picks one by hashing its id, so the angle is stable across
+   reloads rather than reshuffling on every render. */
+.tilt-a { --note-tilt: -1.3deg; }
+.tilt-b { --note-tilt: 0.8deg; }
+.tilt-c { --note-tilt: -0.5deg; }
+.tilt-d { --note-tilt: 1.4deg; }
+.tilt-e { --note-tilt: -0.9deg; }

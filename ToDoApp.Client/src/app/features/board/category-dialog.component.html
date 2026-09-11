@@ -1,0 +1,97 @@
+<div class="dialog-backdrop" (click)="dismiss.emit()"></div>
+
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="categoryDialogTitle">
+  <header class="dialog__header">
+    <h2 class="dialog__title" id="categoryDialogTitle">Categories</h2>
+    <button type="button" class="dialog__close" (click)="dismiss.emit()" aria-label="Close">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <div class="dialog__body">
+    @if (error(); as message) {
+      <div class="alert alert-danger py-2 px-3 mb-3 small" role="alert">{{ message }}</div>
+    }
+
+    <ul class="category-list">
+      @for (category of categories(); track category.id) {
+        <li class="category-row" [class.category-row--editing]="false">
+          <span class="category-row__swatch" [style.background-color]="category.color"></span>
+          <span class="category-row__name">{{ category.name }}</span>
+          <span class="category-row__count">
+            {{ category.taskCount }} {{ category.taskCount === 1 ? 'note' : 'notes' }}
+          </span>
+
+          <button
+            type="button"
+            class="category-row__action"
+            (click)="edit(category)"
+            [disabled]="busy()"
+            [attr.aria-label]="'Edit ' + category.name">
+            <i class="bi bi-pencil" aria-hidden="true"></i>
+          </button>
+
+          <button
+            type="button"
+            class="category-row__action category-row__action--danger"
+            [class.category-row__action--armed]="confirmingDeleteId() === category.id"
+            (click)="requestDelete(category)"
+            [disabled]="busy()"
+            [attr.aria-label]="'Delete ' + category.name">
+            @if (confirmingDeleteId() === category.id) {
+              <span class="category-row__confirm">Delete?</span>
+            } @else {
+              <i class="bi bi-trash3" aria-hidden="true"></i>
+            }
+          </button>
+        </li>
+      } @empty {
+        <li class="category-empty">No categories yet.</li>
+      }
+    </ul>
+
+    <p class="category-note">
+      Deleting a category keeps its notes; they simply stop being categorised.
+    </p>
+
+    <form class="category-form" (ngSubmit)="submit()">
+      <div class="category-form__fields">
+        <div class="flex-grow-1">
+          <label class="form-label" for="categoryName">
+            {{ editingId() === null ? 'New category' : 'Rename category' }}
+          </label>
+          <input
+            id="categoryName"
+            name="categoryName"
+            type="text"
+            class="form-control"
+            maxlength="60"
+            autocomplete="off"
+            placeholder="e.g. Errands"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)" />
+        </div>
+
+        <div>
+          <label class="form-label" for="categoryColor">Colour</label>
+          <input
+            id="categoryColor"
+            name="categoryColor"
+            type="color"
+            class="form-control form-control-color"
+            [ngModel]="color()"
+            (ngModelChange)="color.set($event)" />
+        </div>
+      </div>
+
+      <div class="category-form__actions">
+        @if (editingId() !== null) {
+          <button type="button" class="btn btn-sm btn-quiet" (click)="resetForm()">Cancel</button>
+        }
+        <button type="submit" class="btn btn-sm btn-ink" [disabled]="busy()">
+          {{ editingId() === null ? 'Add category' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

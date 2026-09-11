@@ -1,0 +1,118 @@
+:host {
+  display: flex;
+  min-height: 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0.85rem 0.85rem 0.7rem;
+  background-color: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+}
+
+.column__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* The column's colour appears only here and on its notes -- a label, not a fill. */
+.column__marker {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background-color: var(--column-accent);
+}
+
+.column__label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.column__count {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.column__add {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-faint);
+  line-height: 1;
+}
+
+.column__add:hover {
+  background-color: rgba(120, 116, 106, 0.12);
+  color: var(--ink);
+}
+
+.column__cards {
+  flex: 1;
+  min-height: 96px;
+  overflow-y: auto;
+  /* Room for the tilt and the lifted shadow, which would otherwise be clipped. */
+  padding: 4px 6px 2px;
+  margin: 0 -6px;
+}
+
+.column__card {
+  margin-bottom: 0.6rem;
+}
+
+.column__card:last-child {
+  margin-bottom: 0;
+}
+
+.column__empty {
+  margin: 0;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+/* Per-column accent, consumed by the marker and passed down to the notes. */
+.column--todo {
+  --column-accent: var(--todo-accent);
+}
+
+.column--doing {
+  --column-accent: var(--doing-accent);
+}
+
+.column--done {
+  --column-accent: var(--done-accent);
+}
+
+/* While a card is over this column. */
+.column__cards.cdk-drop-list-receiving,
+.column__cards.cdk-drop-list-dragging {
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--column-accent);
+}
+
+@media (max-width: 900px) {
+  /* The page scrolls instead, so the column grows to fit its cards. */
+  .column__cards {
+    overflow: visible;
+    flex: none;
+  }
+}

@@ -1,0 +1,110 @@
+<div class="board-page">
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__mark" aria-hidden="true"></span>
+      <span class="topbar__name">Notes</span>
+    </div>
+
+    <div class="topbar__filters">
+      <div class="search">
+        <i class="bi bi-search search__icon" aria-hidden="true"></i>
+        <input
+          type="search"
+          class="form-control search__input"
+          placeholder="Search notes"
+          aria-label="Search notes"
+          [ngModel]="store.search()"
+          (ngModelChange)="onSearch($event)" />
+      </div>
+
+      <select
+        class="form-select topbar__category"
+        aria-label="Filter by category"
+        [ngModel]="store.categoryFilter() ?? ''"
+        (ngModelChange)="onCategoryFilter($event)">
+        <option value="">All categories</option>
+        @for (category of store.categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+
+      @if (store.hasFilters()) {
+        <button type="button" class="btn btn-sm btn-quiet" (click)="store.clearFilters()">
+          Clear
+        </button>
+      }
+    </div>
+
+    <div class="topbar__actions">
+      <span
+        class="live"
+        [class.live--on]="store.liveSyncActive()"
+        [title]="store.liveSyncActive() ? 'Synced across your open windows' : 'Not connected — reload to retry'">
+        <span class="live__dot" aria-hidden="true"></span>
+        {{ store.liveSyncActive() ? 'Live' : 'Offline' }}
+      </span>
+
+      <button type="button" class="btn btn-sm btn-quiet" (click)="categoryDialogOpen.set(true)">
+        <i class="bi bi-tags" aria-hidden="true"></i>
+        Categories
+      </button>
+
+      <button type="button" class="btn btn-sm btn-ink" (click)="openNewTask('ToDo')">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        New note
+      </button>
+
+      @if (auth.user(); as user) {
+        <span class="topbar__user" [title]="user.email">
+          @if (user.pictureUrl) {
+            <img class="topbar__avatar" [src]="user.pictureUrl" alt="" />
+          }
+          {{ user.displayName }}
+        </span>
+      }
+
+      <button
+        type="button"
+        class="btn btn-sm btn-quiet"
+        (click)="signOut()"
+        [disabled]="signingOut()">
+        Sign out
+      </button>
+    </div>
+  </header>
+
+  @if (store.error(); as message) {
+    <div class="board-alert alert alert-danger py-2 px-3 mb-0" role="alert">
+      <span>{{ message }}</span>
+      <button type="button" class="btn-close btn-close-sm" (click)="store.dismissError()" aria-label="Dismiss"></button>
+    </div>
+  }
+
+  <main class="board" cdkDropListGroup [class.board--loading]="store.loading()">
+    @for (column of columns; track column.state) {
+      <app-board-column
+        [state]="column.state"
+        [label]="column.label"
+        [column]="store.column(column.state)"
+        [filtered]="store.hasFilters()"
+        (openTask)="openTask($event)"
+        (addTask)="openNewTask($event)"
+        (pageChange)="store.goToPage(column.state, $event)"
+        (cardDropped)="onCardDropped($event)" />
+    }
+  </main>
+</div>
+
+@if (taskDialog(); as dialog) {
+  <app-task-dialog
+    [task]="dialog.task"
+    [initialState]="dialog.initialState"
+    [categories]="store.categories()"
+    (save)="onTaskSaved($event)"
+    (remove)="onTaskDeleted($event)"
+    (dismiss)="taskDialog.set(null)" />
+}
+
+@if (categoryDialogOpen()) {
+  <app-category-dialog (dismiss)="categoryDialogOpen.set(false)" />
+}

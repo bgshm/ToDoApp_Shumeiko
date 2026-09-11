@@ -1,0 +1,82 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-mark" aria-hidden="true">
+      <span class="login-mark__note login-mark__note--todo"></span>
+      <span class="login-mark__note login-mark__note--doing"></span>
+      <span class="login-mark__note login-mark__note--done"></span>
+    </div>
+
+    <h1 class="login-title">Notes</h1>
+    <p class="login-subtitle">A small board for the things you have to do.</p>
+
+    @if (loading()) {
+      <p class="login-status">Checking sign-in options&hellip;</p>
+    } @else {
+      @if (error(); as message) {
+        <div class="alert alert-danger py-2 px-3 mb-3 small" role="alert">{{ message }}</div>
+      }
+
+      @if (config()?.googleEnabled) {
+        <div class="d-flex justify-content-center">
+          <div #googleButton></div>
+        </div>
+
+        @if (googleError(); as message) {
+          <p class="login-hint text-danger mt-2">{{ message }}</p>
+        }
+      }
+
+      @if (config()?.googleEnabled && config()?.devLoginEnabled) {
+        <div class="login-divider"><span>or</span></div>
+      }
+
+      @if (config()?.devLoginEnabled) {
+        <form (ngSubmit)="signInWithDevAccount()" class="text-start">
+          <p class="login-hint mb-3">
+            @if (config()?.googleEnabled) {
+              Or open a local board without Google.
+            } @else {
+              Google sign-in is not configured on this server yet, so you can open a local
+              board instead.
+            }
+            Returning with the same address reopens the same board.
+          </p>
+
+          <div class="mb-2">
+            <label class="form-label" for="devEmail">Email</label>
+            <input
+              id="devEmail"
+              name="devEmail"
+              type="email"
+              class="form-control"
+              required
+              [(ngModel)]="devEmail"
+              [disabled]="submitting()" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="devName">Display name</label>
+            <input
+              id="devName"
+              name="devName"
+              type="text"
+              class="form-control"
+              [(ngModel)]="devName"
+              [disabled]="submitting()" />
+          </div>
+
+          <button type="submit" class="btn btn-ink w-100" [disabled]="submitting()">
+            {{ submitting() ? 'Signing in…' : 'Open a local board' }}
+          </button>
+        </form>
+      }
+
+      @if (!config()?.googleEnabled && !config()?.devLoginEnabled) {
+        <p class="login-hint">
+          No sign-in method is enabled. Set <code>Authentication:Google:ClientId</code> in the
+          server configuration, then reload this page.
+        </p>
+      }
+    }
+  </div>
+</div>

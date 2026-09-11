@@ -1,0 +1,68 @@
+:host {
+  display: block;
+}
+
+/* The note itself is styled globally so the CDK drag preview matches; this file only
+   covers what lives inside it. */
+
+.note-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.note-category__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--ink-faint);
+}
+
+.note-title {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.note-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.note-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  /* Clears the turned-up corner. */
+  margin-top: 0.55rem;
+  padding-right: 1rem;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+.note-due--today {
+  color: #9a6f14;
+  font-weight: 600;
+}
+
+.note-due--overdue {
+  color: var(--danger);
+  font-weight: 600;
+}

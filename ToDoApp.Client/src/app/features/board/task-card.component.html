@@ -1,0 +1,25 @@
+<button
+  type="button"
+  class="sticky-note sticky-note--{{ stateClass() }} {{ tiltClass() }}"
+  (click)="open.emit(task())"
+  [attr.aria-label]="'Edit ' + task().title">
+  @if (task().categoryName; as categoryName) {
+    <span class="note-category">
+      <span class="note-category__dot" [style.background-color]="task().categoryColor"></span>
+      {{ categoryName }}
+    </span>
+  }
+
+  <span class="note-title">{{ task().title }}</span>
+
+  @if (task().description; as description) {
+    <span class="note-body">{{ description }}</span>
+  }
+
+  @if (task().dueDate; as dueDate) {
+    <span class="note-due note-due--{{ dueState() }}">
+      <i class="bi bi-calendar3" aria-hidden="true"></i>
+      {{ dueDate | date: 'd MMM' }}
+    </span>
+  }
+</button>

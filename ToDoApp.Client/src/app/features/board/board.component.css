@@ -1,0 +1,172 @@
+.board-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--paper);
+}
+
+/* --- top bar -------------------------------------------------------------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1.1rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.topbar__mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background-color: var(--doing-note);
+  box-shadow: var(--shadow-note);
+  transform: rotate(-6deg);
+}
+
+.topbar__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.topbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.search {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 300px;
+}
+
+.search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.6rem;
+  transform: translateY(-50%);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+.search__input {
+  padding-left: 1.9rem;
+  height: 32px;
+}
+
+.topbar__category {
+  width: auto;
+  min-width: 150px;
+  height: 32px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.topbar__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.topbar__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Realtime status; deliberately quiet, since it is ambient information. */
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  cursor: default;
+}
+
+.live__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--hairline-strong);
+}
+
+.live--on .live__dot {
+  background-color: var(--done-accent);
+}
+
+/* --- board ---------------------------------------------------------------- */
+
+.board-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0;
+  font-size: 0.8rem;
+}
+
+.board-alert .btn-close {
+  margin-left: auto;
+  font-size: 0.6rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  flex: 1;
+  min-height: 0;
+  padding: 0.9rem 1.1rem 1.1rem;
+  transition: opacity 120ms ease;
+}
+
+.board--loading {
+  /* Just enough to register as "working", without hiding the cards mid-drag. */
+  opacity: 0.72;
+}
+
+/* Stacked below this width. The page, rather than each column, becomes the thing that
+   scrolls -- three independently scrolling boxes on a narrow screen is unusable. */
+@media (max-width: 900px) {
+  .board-page {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .board {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .topbar__actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}

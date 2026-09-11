@@ -1,0 +1,20 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+*.suo
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Local secrets and logs
+*.log
+appsettings.*.local.json

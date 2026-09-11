@@ -1,0 +1,106 @@
+<div class="dialog-backdrop" (click)="dismiss.emit()"></div>
+
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="taskDialogTitle">
+  <form (ngSubmit)="onSubmit()">
+    <header class="dialog__header">
+      <h2 class="dialog__title" id="taskDialogTitle">
+        {{ isEditing() ? 'Edit note' : 'New note' }}
+      </h2>
+      <button type="button" class="dialog__close" (click)="dismiss.emit()" aria-label="Close">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="dialog__body">
+      <div class="mb-3">
+        <label class="form-label" for="taskTitle">Title</label>
+        <input
+          id="taskTitle"
+          name="title"
+          type="text"
+          class="form-control"
+          maxlength="200"
+          autocomplete="off"
+          [ngModel]="title()"
+          (ngModelChange)="title.set($event)"
+          [class.is-invalid]="submitted() && !titleIsValid()" />
+        @if (submitted() && !titleIsValid()) {
+          <div class="invalid-feedback d-block">Give the note a title.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="taskDescription">Notes</label>
+        <textarea
+          id="taskDescription"
+          name="description"
+          class="form-control"
+          rows="3"
+          maxlength="2000"
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event)"></textarea>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-sm-4">
+          <label class="form-label" for="taskState">Column</label>
+          <select
+            id="taskState"
+            name="state"
+            class="form-select"
+            [ngModel]="state()"
+            (ngModelChange)="state.set($event)">
+            <option value="ToDo">To Do</option>
+            <option value="Doing">Doing</option>
+            <option value="Done">Done</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-4">
+          <label class="form-label" for="taskCategory">Category</label>
+          <select
+            id="taskCategory"
+            name="categoryId"
+            class="form-select"
+            [ngModel]="categoryId()"
+            (ngModelChange)="categoryId.set($event)">
+            <option value="">None</option>
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-4">
+          <label class="form-label" for="taskDueDate">Due</label>
+          <input
+            id="taskDueDate"
+            name="dueDate"
+            type="date"
+            class="form-control"
+            [ngModel]="dueDate()"
+            (ngModelChange)="dueDate.set($event)" />
+        </div>
+      </div>
+    </div>
+
+    <footer class="dialog__footer">
+      @if (isEditing()) {
+        <button
+          type="button"
+          class="btn btn-sm dialog__delete"
+          [class.dialog__delete--armed]="confirmingDelete()"
+          (click)="onDelete()">
+          {{ confirmingDelete() ? 'Really delete?' : 'Delete' }}
+        </button>
+      }
+
+      <span class="dialog__spacer"></span>
+
+      <button type="button" class="btn btn-sm btn-quiet" (click)="dismiss.emit()">Cancel</button>
+      <button type="submit" class="btn btn-sm btn-ink">
+        {{ isEditing() ? 'Save' : 'Add note' }}
+      </button>
+    </footer>
+  </form>
+</div>

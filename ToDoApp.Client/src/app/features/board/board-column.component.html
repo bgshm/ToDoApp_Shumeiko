@@ -1,0 +1,38 @@
+<section class="column column--{{ modifier() }}">
+  <header class="column__header">
+    <span class="column__marker" aria-hidden="true"></span>
+    <h2 class="column__label">{{ label() }}</h2>
+    <span class="column__count">{{ column().totalCount }}</span>
+
+    <button
+      type="button"
+      class="column__add"
+      (click)="addTask.emit(state())"
+      [attr.aria-label]="'Add a card to ' + label()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <div
+    class="column__cards"
+    cdkDropList
+    [cdkDropListData]="state()"
+    (cdkDropListDropped)="cardDropped.emit($event)">
+    @for (task of column().items; track task.id) {
+      <div cdkDrag [cdkDragData]="task" class="column__card">
+        <app-task-card [task]="task" (open)="openTask.emit($event)" />
+      </div>
+    } @empty {
+      <p class="column__empty">
+        {{ filtered() ? 'Nothing matches here.' : 'Drop a note here.' }}
+      </p>
+    }
+  </div>
+
+  <app-paginator
+    [page]="column().page"
+    [totalPages]="column().totalPages"
+    [totalCount]="column().totalCount"
+    [pageSize]="column().pageSize"
+    (pageChange)="pageChange.emit($event)" />
+</section>
